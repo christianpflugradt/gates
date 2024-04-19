@@ -16,7 +16,7 @@ jobs:
         run: |
           cargo llvm-cov --all-features --json --output-path lcov.json
           coverage=`cat lcov.json | jq '.data[0].totals.lines.percent'`
-          result=`echo "$coverage>95" | bc
+          result=`echo "$coverage>95" | bc`
           if [[ $result == 1 ]]; then
             echo "coverage test passed with $coverage% coverage"
             exit 0
