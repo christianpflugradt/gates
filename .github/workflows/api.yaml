@@ -65,12 +65,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: test-coverage-report
-          path: api/target/llvm-cov/html/*
+          path: api/target/llvm-cov/html/
 
       - name: Check coverage
         run: |
           coverage=`echo "${{ steps.llvm-cov.outputs.coverage }}"`
-          result=`echo "$coverage>95" | bc`
+          result=`echo "$coverage>97" | bc`
           if [[ $result == 1 ]]; then
             echo -e "\e[32mPASSED\e[0m"
           else
