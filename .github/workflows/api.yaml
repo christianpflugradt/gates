@@ -67,14 +67,14 @@ jobs:
           name: test-coverage-report
           path: api/target/llvm-cov/html/*
 
-      - name: Test coverage
+      - name: Check coverage
         run: |
           coverage=`echo "${{ steps.llvm-cov.outputs.coverage }}"`
           result=`echo "$coverage>95" | bc`
           if [[ $result == 1 ]]; then
-            echo "coverage test passed with $coverage% coverage"
+            echo -e "\e[32mPASSED\e[0m"
           else
-            echo "coverage test failed with $coverage% coverage (95% required)"
+            echo -e "\e[31mFAILED\e[0m"
             exit 1
           fi 
 
