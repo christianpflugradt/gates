@@ -54,27 +54,29 @@ jobs:
         uses: taiki-e/install-action@cargo-llvm-cov
 
       - name: Run Tests
+        id: llvm-cov
         working-directory: api
         #run: cargo test --all-features
         run: |
           cargo llvm-cov --all-features --json --output-path coverage.json
           cargo llvm-cov report --html
-          coverage=`cat coverage.json | jq '.data[0].totals.lines.percent'`
-          result=`echo "$coverage>95" | bc`
-          if [[ $result == 1 ]]; then
-            echo "coverage test passed with $coverage% coverage"
-            exit 0
-          else
-            echo "coverage test failed with $coverage% coverage (95% required)"
-            exit 1
-          fi
+          echo "coverage=`cat coverage.json | jq '.data[0].totals.lines.percent'`" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v4
         with:
           name: test-coverage-report
           path: api/target/llvm-cov/html/*
 
-
+      - name: Test coverage
+        run: |
+          coverage=`echo "${{ steps.llvm-cov.outputs.coverage }}"`
+          result=`echo "$coverage>95" | bc`
+          if [[ $result == 1 ]]; then
+            echo "coverage test passed with $coverage% coverage"
+          else
+            echo "coverage test failed with $coverage% coverage (95% required)"
+            exit 1
+          fi 
 
   check-openapi-conformance:
     needs: lint-and-check
