@@ -57,8 +57,9 @@ jobs:
         working-directory: api
         #run: cargo test --all-features
         run: |
-          cargo llvm-cov --all-features --json --output-path lcov.json
-          coverage=`cat lcov.json | jq '.data[0].totals.lines.percent'`
+          cargo llvm-cov --all-features --json --output-path coverage.json
+          cargo llvm-cov report --html
+          coverage=`cat coverage.json | jq '.data[0].totals.lines.percent'`
           result=`echo "$coverage>95" | bc`
           if [[ $result == 1 ]]; then
             echo "coverage test passed with $coverage% coverage"
@@ -67,6 +68,11 @@ jobs:
             echo "coverage test failed with $coverage% coverage (95% required)"
             exit 1
           fi
+
+      - uses: actions/upload-artifact@4
+        with:
+          name: test-coverage-report
+          path: api/target/llvm-cov/html/*
 
 
 
